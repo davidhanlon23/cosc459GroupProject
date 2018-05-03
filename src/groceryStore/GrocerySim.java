@@ -30,6 +30,15 @@ public class GrocerySim
 		GrocerySim sim = new GrocerySim(customers);
 		sim.runSimulation();
 		sim.showResults();
+		System.out.println("");
+		System.out.println("Grocery Store diagram:");
+		System.out.println("Where Customers are denoted by X, Server by S, and the system by the box.");
+		System.out.println("\t\t\t----------------------------------------------------");
+		System.out.println("Arriving Customer \t| Customers Waiting to be served \t Server \t   | Departing Customer");
+		System.out.println("\t X \t\t|\t X X X X \t\t    \t   S \t   |");
+		System.out.println("\t\t\t| \t\t\t\t\t\t   |");
+		System.out.println("\t\t\t| \t\t\t\t\t\t   |");
+		System.out.println("\t\t\t----------------------------------------------------");
 	}
 	
 	public GrocerySim(int n)
