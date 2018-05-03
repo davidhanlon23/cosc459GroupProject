@@ -7,14 +7,13 @@
  Started: 04/15/2018
 --------------------------------------------------------*/
 package groceryStore;
+
 import java.util.*;
 
 public class GrocerySim
 {
 	
 	private PriorityQueue<SimEvent> FEL;
-
-
 	private Queue<Customer> checkLine; 
 
 	private ArrayList<Customer> customers;
@@ -22,7 +21,17 @@ public class GrocerySim
 	private Customer currCust;
 	private CheckOut cashier;
 	private Random r;
-
+	
+	// As in most object-oriented programs, the main here is very simple
+	public static void main (String [] args) throws ClassNotFoundException
+	{
+		int customers = 14;
+		
+		GrocerySim sim = new GrocerySim(customers);
+		sim.runSimulation();
+		sim.showResults();
+	}
+	
 	public GrocerySim(int n)
 	{
 		FEL = new PriorityQueue<SimEvent>();
@@ -31,10 +40,10 @@ public class GrocerySim
 		                   // checked out are in a simple queue (FIFO).
 		numCustomers = n;
 		customers = new ArrayList<Customer>();
-		                   
+		              
 		cashier = new CheckOut();
 		r = new Random((new Date()).getTime());  // Seed the random number
-		                   // generator so output differs from run to run.
+		                   // generator so output differs 	from run to run.
 	}
 
 	public void runSimulation() throws ClassNotFoundException
@@ -82,7 +91,49 @@ public class GrocerySim
 		}
 	}
 
+	private class CheckOut
+	{
+		private boolean busy;
+		private Customer currentCust;
 
+		public CheckOut()
+		{
+			busy = false;
+			currentCust = null;
+		}
+
+		public boolean isBusy()
+		{
+			return busy;
+		}
+
+		public void addCust(Customer c)
+		{
+			currentCust = c;
+			busy = true;
+		}
+
+		public Customer removeCust()
+		{
+			Customer t = currentCust;
+			currentCust = null;
+			busy = false;
+			return t;
+		}
+	}
+
+	private class Customer
+	{
+		private int id;
+		public int arrivalT, serviceT, startServiceT, waitT, endServiceT, inSystemT;
+
+		public Customer(int newid, int arr)
+		{
+			id = newid;
+			arrivalT = arr;
+		}
+	}
+		
 	public void showResults()
 	{
 		System.out.println("Customer  Time Since  Arrival  Service  Time Service  Time Customer  Time Service   Time Spent  Idle Server");
@@ -97,6 +148,7 @@ public class GrocerySim
 		int idleTot = 0;
 		int numWait = 0;
 		int totalTime = 0;
+		float arrivalRate,serviceRate;
 		for (int i = 0; i < customers.size(); i++)
 		{
 			currCust = customers.get(i);
@@ -134,33 +186,29 @@ public class GrocerySim
 				totalTime = currCust.endServiceT;
 			System.out.println();
 		}
+		
+		arrivalRate = 1/(arrTot/((float) (numCustomers - 1)));
+		serviceRate = 1/(servTot/((float) numCustomers));
+		
 		System.out.println();
-		System.out.println("Average Wait: " + (waitTot/((float) numCustomers)));
-		System.out.println("P(wait): " + (numWait/((float) numCustomers)));
-		System.out.println("Frac. Idle: " + (idleTot/((float) totalTime)));
-		System.out.println("Ave. Service: " + (servTot/((float) numCustomers)));
-		System.out.println("Ave. Interarrival: " + (arrTot/((float) (numCustomers - 1))));
-		System.out.println("Ave. Waiter Wait: " + (waitTot/((float) numWait)));
-		System.out.println("Ave. in System: " + (sysTot/((float) numCustomers)));
+		System.out.printf("Arrival rate: %.2f %n", arrivalRate);
+		System.out.printf("Service rate: %.2f %n", serviceRate);
+		System.out.printf("(P)Server utilization: %.2f %n", (numWait/((float) numCustomers)));
+		System.out.printf("(An)Avg. interarrival time: %.2f %n", (arrTot/((float) (numCustomers - 1))));
+		System.out.printf("(Sn)Avg. service time: %.2f %n",  (servTot/((float) numCustomers)));
+		System.out.println("L(t)Customers in system: " + numCustomers);
+		System.out.println("LQ(t)Customers in queue: " + numWait);
+		System.out.printf("(L)Avg. num of customers in system: %.2f %n", (sysTot/((float) numCustomers)));
+		System.out.printf("(LQ) Avg. num of customers in queue: %.2f %n", (numCustomers/((float) numWait)));
+		System.out.printf("(W)Avg. wait in system: %.2f %n", (waitTot/((float) numCustomers)));
+		System.out.printf("(WQ)Avg. wait in queue: %.2f %n", (waitTot/((float) numWait)));
 	}
 
-	// As in most object-oriented programs, the main here is very simple
-	public static void main (String [] args) throws ClassNotFoundException
-	{
-		//int numCusts = Integer.parseInt(args[-1]);
-		int numCusts = (args.length > 0) ? Integer.parseInt(args[0]) : 10;
-		GrocerySim sim = new GrocerySim(numCusts);
-		sim.runSimulation();
-		sim.showResults();
-	}
-
-	
 	public int deltaCustomer()
 	{
 		return (r.nextInt(8) + 1);
 	}
 
-	
 	public int serviceTime()
 	{
 		double zeroOne = r.nextDouble();
@@ -170,50 +218,5 @@ public class GrocerySim
 		else if (zeroOne <= 0.85) return 4;
 		else if (zeroOne <= 0.95) return 5;
 		else return 6;
-	}
-
-
-	private class CheckOut
-	{
-		private boolean busy;
-		private Customer currentCust;
-
-		public CheckOut()
-		{
-			busy = false;
-			currentCust = null;
-		}
-
-		public boolean isBusy()
-		{
-			return busy;
-		}
-
-		public void addCust(Customer c)
-		{
-			currentCust = c;
-			busy = true;
-		}
-
-		public Customer removeCust()
-		{
-			Customer t = currentCust;
-			currentCust = null;
-			busy = false;
-			return t;
-		}
-	}
-
-
-	private class Customer
-	{
-		private int id;
-		public int arrivalT, serviceT, startServiceT, waitT, endServiceT, inSystemT;
-
-		public Customer(int newid, int arr)
-		{
-			id = newid;
-			arrivalT = arr;
-		}
 	}
 }

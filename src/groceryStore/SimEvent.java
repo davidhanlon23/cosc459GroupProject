@@ -11,6 +11,8 @@ public abstract class SimEvent implements Comparable<SimEvent>
 {
 	protected int e_time;
 
+	public SimEvent() {}
+	
 	public int get_e_time()
 	{
 		return e_time;
