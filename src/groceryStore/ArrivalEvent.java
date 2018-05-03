@@ -9,6 +9,8 @@
 package groceryStore;
 public class ArrivalEvent extends SimEvent
 {
+	public ArrivalEvent() {}
+	
 	public ArrivalEvent(int new_time)
 	{
 		e_time = new_time;

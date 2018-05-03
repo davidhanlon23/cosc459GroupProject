@@ -9,6 +9,8 @@
 package groceryStore;
 public class CompletionEvent extends SimEvent
 {
+	public CompletionEvent() {}
+	
 	public CompletionEvent(int new_time)
 	{
 		e_time = new_time;
